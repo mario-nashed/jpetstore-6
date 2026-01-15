@@ -14,8 +14,20 @@
 #    limitations under the License.
 #
 
-FROM openjdk:17.0.2
-COPY . /usr/src/myapp
-WORKDIR /usr/src/myapp
-RUN ./mvnw clean package
-CMD ./mvnw cargo:run -P tomcat90
+#FROM openjdk:17.0.2
+#COPY . /usr/src/myapp
+#WORKDIR /usr/src/myapp
+#RUN ./mvnw clean package
+#CMD ./mvnw cargo:run -P tomcat90
+
+FROM tomcat:9-jdk17
+
+# Supprimer les apps par défaut de Tomcat
+RUN rm -rf /usr/local/tomcat/webapps/*
+
+# Copier le WAR généré par Jenkins
+COPY target/*.war /usr/local/tomcat/webapps/ROOT.war
+
+EXPOSE 8080
+
+CMD ["catalina.sh", "run"]
